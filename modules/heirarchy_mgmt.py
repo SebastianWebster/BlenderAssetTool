@@ -29,13 +29,15 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
 
     def init_heirarchy(self, context):
         if self.instantiated == False:
-            bpy.ops.collection.create(name=self.project_name)
-            bpy.context.scene.collection.children.link(bpy.data.collections[self.project_name])
+            #create a new collection with no parents or children
+            OutlinerUtil.add_collection(self.project_name)
             
             for i in range(self.obj_count):
-                childcollname = "object" + str(i+1)
-                OutlinerUtil.create_collection_to_parent(self.project_name,childcollname)
-                OutlinerUtil.create_collection_to_parent(childcollname,self.get_definitions())
+                objname = "OBJ" + str(i)
+                OutlinerUtil.add_collection(objname,parent = self.project_name)
+                for definintion in self.get_definitions():
+                    OutlinerUtil.add_collection(objname + "_" + definintion,parent = objname)
+
         else:
             print("Already Instanced skipping")
 

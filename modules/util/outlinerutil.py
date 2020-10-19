@@ -1,21 +1,17 @@
 import bpy
-
 class OutlinerUtil:
 
-    @staticmethod
-    def createchildCol(parentName,childName):
-        bpy.ops.collection.create(name = childName)
-        bpy.data.collections[parentName].children.link(bpy.data.collections[childName])
+
 
     @staticmethod
-    #Expecting str and list(str) for *children
-    def create_collection_to_parent(parent_id,*children):
-        for child in children:
-            if isinstance(child, str):
-                OutlinerUtil.createchildCol(parent_id,child)
-            else:
-                for setChild in child:
-                    #Addition of parent required as names of colelctions must be unique otherwise they like are mirrors of themselves
-                    OutlinerUtil.createchildCol(parent_id,parent_id + "_" + setChild)
-    
-    
+    # Given a collection name, potential parent and potential children
+    def add_collection(collection_name,**options):
+        bpy.ops.collection.create(name=collection_name)
+        print("Created Collection :" + collection_name)
+        #If there is a parent Assign else assign to scene collection
+        if 'parent' in options:
+            print("Linking to parent :" + options['parent'])
+            bpy.data.collections[options['parent']].children.link(bpy.data.collections[collection_name])
+        else:
+            print("No parent specified link to scene col")
+            bpy.context.scene.collection.children.link(bpy.data.collections[collection_name])
