@@ -6,9 +6,11 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
     bl_label = "Manage Heirarchy"
     bl_idname = "wm.heirarchy_manager"
 
+    instantiated = False
+
     defaultlayout = {
-    "high_poly_alias": "_high",
-    "low_poly_alias": "_low",
+    "high_poly_alias": "high",
+    "low_poly_alias": "low",
     "extra_objects": "EXTRAS",
     "lods_alias": "LODS"
     }
@@ -26,14 +28,16 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
 
 
     def init_heirarchy(self, context):
-        bpy.ops.collection.create(name=self.project_name)
-        bpy.context.scene.collection.children.link(bpy.data.collections[self.project_name])
-        
-        for i in range(self.obj_count):
-            childcollname = "object" + str(i+1)
-            OutlinerUtil.create_collection_to_parent(self.project_name,childcollname)
-            OutlinerUtil.create_collection_to_parent(childcollname,self.get_definitions())
+        if self.instantiated == False:
+            bpy.ops.collection.create(name=self.project_name)
+            bpy.context.scene.collection.children.link(bpy.data.collections[self.project_name])
             
+            for i in range(self.obj_count):
+                childcollname = "object" + str(i+1)
+                OutlinerUtil.create_collection_to_parent(self.project_name,childcollname)
+                OutlinerUtil.create_collection_to_parent(childcollname,self.get_definitions())
+        else:
+            print("Already Instanced skipping")
 
 
     def execute(self, context):

@@ -15,6 +15,7 @@ class OutlinerUtil:
                 OutlinerUtil.createchildCol(parent_id,child)
             else:
                 for setChild in child:
-                    OutlinerUtil.createchildCol(parent_id,setChild)
+                    #Addition of parent required as names of colelctions must be unique otherwise they like are mirrors of themselves
+                    OutlinerUtil.createchildCol(parent_id,parent_id + "_" + setChild)
     
     
