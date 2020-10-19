@@ -1,15 +1,19 @@
 import bpy
 
-class test_pt_panel(bpy.types.Panel):
-    bl_idname = "test_pt_panel"
-    bl_label = "Test Panel"
-    bl_category = "AssetCreator3"
+
+class MainPanel(bpy.types.Panel):
+    bl_idname = "main_panel"
+    bl_label = "AssetCreator"
+    bl_category = "AssetCreator"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    #Defines if a project has been started, stops user from running startnewproject twice and deleting everything
+    projectinit = False
 
     def draw (self,context):
         layout = self.layout
         row = layout.row()
-        row.operator('object.test_two',text = "WORKBRUHa?")
-        row.operator('view3d.cursor_center',text = "WORKBRUH?")
+        row.operator('wm.heirarchy_manager',text = "Start New Project")
+        row = layout.row()
+
     
