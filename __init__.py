@@ -14,25 +14,24 @@ import sys
 import os
 import json
 
-from .modules.test_op import test_ot_op,Test_twoOperator
+from .modules.globaldata_util import GlobalDataHandler
 
 from .modules.test_panel import MainPanel
 
 from .modules.heirarchy_mgmt import UI_Heirarchy_MGMT_Popup
 
 #Collate all here
-classes = (test_ot_op,Test_twoOperator,MainPanel,UI_Heirarchy_MGMT_Popup)
+classes = (MainPanel,UI_Heirarchy_MGMT_Popup)
 
-# Used to store info on the .blend file so it can be reference even after saves ectect
-GLOBAL_DATA = {"PROJECT_INITILIZED":False,"LOADTEST":'Yo'}
-# Create var to hold data as a string
-bpy.types.Scene.ASSETCREATOR_GLOBALS = bpy.props.StringProperty()
-# Assign the data to the data as a JSON string so it can be recalled with:
-# GLOBAL_DATA = json.loads(bpy.types.Scene.ASSETCREATOR_GLOBALS)
-bpy.types.Scene.ASSETCREATOR_GLOBALS = json.dumps(GLOBAL_DATA)
+def register():
+    bpy.utils.register_class(MainPanel)
+    bpy.utils.register_class(UI_Heirarchy_MGMT_Popup)
+    bpy.types.Scene.ASSETCREATOR_GLOBALS = bpy.props.StringProperty(default=json.dumps({"DATASTRUCT_ID":"ASSETCREATOR_GLOBALS","PROJECT_INIT":False}))
 
-#Register with factory might need to change if adding keybindings ectect
-register,unregister = bpy.utils.register_classes_factory(classes)
 
+def unregister():
+    del bpy.types.Scene.ASSETCREATOR_GLOBALS
+    bpy.utils.unregister_class(UI_Heirarchy_MGMT_Popup)
+    bpy.utils.unregister_class(MainPanel)
 
 

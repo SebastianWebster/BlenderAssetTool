@@ -1,6 +1,7 @@
 import bpy
 import json
 from .util.outlinerutil import OutlinerUtil
+from .globaldata_util import GlobalDataHandler
 
 class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
     # Hardcoded configs
@@ -27,10 +28,8 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
         self.defaultlayout["lods_alias"])
 
     def init_heirarchy(self, context):
-        _GLOBAL_DATA = json.loads(bpy.types.Scene.ASSETCREATOR_GLOBALS)
-        print(_GLOBAL_DATA['LOADTEST'])
-        _instanced = _GLOBAL_DATA['PROJECT_INITILIZED']
-
+        _instanced = GlobalDataHandler.open_data(context)["PROJECT_INIT"]
+        print(GlobalDataHandler.open_data(context))
         if _instanced == False:
             # Create a new collection with no parents or children
             OutlinerUtil.add_collection(self.project_name)
@@ -42,9 +41,8 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
                     OutlinerUtil.add_collection(objname + "_" + definintion,parent = objname)
 
             # Assign to the scene data so there can be no error of attempting to instance the project twice
-            _GLOBAL_DATA['PROJECT_INITILIZED'] = True
-            _GLOBAL_DATA['LOADTEST'] = 'ProjectInitB4'
-            bpy.types.Scene.ASSETCREATOR_GLOBALS = json.dumps(_GLOBAL_DATA)
+            GlobalDataHandler.update_data(context,"PROJECT_INIT",True)
+            print(GlobalDataHandler.open_data(context))
 
         else:
             print("Already Instanced skipping")
