@@ -17,7 +17,7 @@ class GlobalDataHandler:
         if data_key in jsonData:
             print("DataKey of : " + data_key + " Already exists in data use UPDATE instead")
         else:
-            jsonData.update({data_key,data_val})
+            jsonData.update({data_key:data_val})
             GlobalDataHandler.save_data(context,jsonData)
 
     @staticmethod
@@ -30,6 +30,13 @@ class GlobalDataHandler:
         else:
             print("DataKey of : " + data_key + " does not exist in data use APPEND instead")
 
+    
+    @staticmethod
+    #Increments a global data of a numerical Type
+    def quick_inc(context,data_id):
+        val = GlobalDataHandler.open_data(context)[data_id]
+        val+=1
+        GlobalDataHandler.update_data(context,data_id,val)
 
     @staticmethod
     def save_data(context,newData):

@@ -2,7 +2,7 @@ import bpy
 
 
 class MainPanel(bpy.types.Panel):
-    bl_idname = "main_panel"
+    bl_idname = "main_PT_panel"
     bl_label = "AssetCreator"
     bl_category = "AssetCreator"
     bl_space_type = "VIEW_3D"
@@ -15,5 +15,7 @@ class MainPanel(bpy.types.Panel):
         row = layout.row()
         row.operator('wm.heirarchy_manager',text = "Start New Project")
         row = layout.row()
+        row.operator('wm.quick_add_obj',text = "Quick Object")
+        row.operator('wm.add_newobj',text = "Add Object")
 
     

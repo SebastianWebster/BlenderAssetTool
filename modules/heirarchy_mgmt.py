@@ -8,14 +8,6 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
     bl_label = "Manage Heirarchy"
     bl_idname = "wm.heirarchy_manager"
 
-    #Temp Method for storing configs, probably will make this into a JSON file/parser later
-    defaultlayout = {
-    "high_poly_alias": "high",
-    "low_poly_alias": "low",
-    "extra_objects": "EXTRAS",
-    "lods_alias": "LODS"
-    }
-
     # USER USER DEFINED INPUTS
     project_name = bpy.props.StringProperty(name="Project Name:")
     obj_count = bpy.props.IntProperty(name="Object Count", default=1)
@@ -28,33 +20,62 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
         self.defaultlayout["lods_alias"])
 
     def init_heirarchy(self, context):
-        _instanced = GlobalDataHandler.open_data(context)["PROJECT_INIT"]
-        print(GlobalDataHandler.open_data(context))
+        data = GlobalDataHandler.open_data(context)
+        _instanced = data["PROJECT_INIT"]
+
         if _instanced == False:
             # Create a new collection with no parents or children
             OutlinerUtil.add_collection(self.project_name)
             # With default of 1 create the framework for 'n' objects
             for i in range(self.obj_count):
-                objname = "OBJ" + str(i)
-                OutlinerUtil.add_collection(objname,parent = self.project_name)
-                for definintion in self.get_definitions():
-                    OutlinerUtil.add_collection(objname + "_" + definintion,parent = objname)
+                OutlinerUtil.add_new_obj(context,self.project_name)
 
             # Assign to the scene data so there can be no error of attempting to instance the project twice
             GlobalDataHandler.update_data(context,"PROJECT_INIT",True)
-            print(GlobalDataHandler.open_data(context))
+            GlobalDataHandler.append_data(context,"PROJECT_NAME",self.project_name)
 
         else:
             print("Already Instanced skipping")
-
-
 
     def execute(self, context):
         self.init_heirarchy(context)
         return {"FINISHED"}
 
+    def invoke(self, context, event):
+        wm = context.window_manager
+
+        return wm.invoke_props_dialog(self)
+
+
+class UI_AddNew_Quick_Object_Popup(bpy.types.Operator):
+    bl_label = "Quick Add New Object"
+    bl_idname = "wm.quick_add_obj"
+
+    def execute(self, context):
+        proj_name = GlobalDataHandler.open_data(context)["PROJECT_NAME"]
+        OutlinerUtil.add_new_obj(context,proj_name)
+
+        return {"FINISHED"}
+
+
+class UI_AddNewObject_Popup(bpy.types.Operator):
+    bl_label = "Add New Object"
+    bl_idname = "wm.add_newobj"
+
+    object_name = bpy.props.StringProperty(name="Project Name:")
+    primType = bpy.props.IntProperty(name="Object Count", default=1)
+
+    def execute(self, context):
+
+
+
+        return {"FINISHED"}
 
     def invoke(self, context, event):
         wm = context.window_manager
 
         return wm.invoke_props_dialog(self)
+
+
+
+
