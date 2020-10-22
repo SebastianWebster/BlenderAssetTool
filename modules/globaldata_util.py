@@ -10,6 +10,11 @@ class GlobalDataHandler:
         return global_list_id[type_id]
 
     @staticmethod
+    def globalmapping_to_typeid(globalmapping):
+        global_list_id = {"PROJECT_COLLECTIONS":"COLLECTION","PROJECT_OBJECTS":"OBJECT","PROJECT_MATERIALS":"MATERIAL"}
+        return global_list_id[globalmapping]
+
+    @staticmethod
     #Open data if not exist instantiate
     def open_data(context):
         print(json.loads(bpy.context.scene.ASSETCREATOR_GLOBALS))

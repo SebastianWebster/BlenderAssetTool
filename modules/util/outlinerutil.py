@@ -12,6 +12,28 @@ class OutlinerUtil:
         return item_alias_defs[item_type]
 
     @staticmethod
+    #Searches for a specific item in global collections lists and returns what type of colelction it is
+    def get_collection_type(context,collection_id):
+        proj_data = GlobalDataHandler.open_data(context)
+        #Order of likelyhood
+        allcollections = [proj_data["PROJECT_OBJECTS"],proj_data["PROJECT_MATERIALS"],proj_data["PROJECT_COLLECTIONS"]]
+        collectionNames = ["PROJECT_OBJECTS","PROJECT_MATERIALS","PROJECT_COLLECTIONS"]
+        ctr = 0
+        for coll in allcollections:
+            if collection_id in coll:
+                return GlobalDataHandler.globalmapping_to_typeid(collectionNames[ctr])
+            ctr+=1
+        return "default"
+
+    @staticmethod
+    # Checks if a collections is identified as the target type
+    def collection_type_validator(context,collection_target,collection_id):
+        if collection_target == OutlinerUtil.get_collection_type(context,collection_id):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def link_collection_parent(child_id,**options):
         if 'parent' in options:
             print("Linking collection " + child_id +
@@ -28,7 +50,7 @@ class OutlinerUtil:
     def add_new_collection(context,type_id,**kwargs):
         #Ensures there are no selected objects, which would cook up the system
         bpy.ops.object.select_all(action='DESELECT')
-        
+
         project_data = GlobalDataHandler.open_data(context)
         collection_name = "new_collection"
         postfix = OutlinerUtil.get_type_alias(type_id)
@@ -49,7 +71,6 @@ class OutlinerUtil:
         #Iterate over children and assign this collection as parent
         if "children" in kwargs:
             for child in kwargs["children"]:
-                OutlinerUtil.add_new_collection(collection_name + "_" + project_data["OBJ_SUB_COLLECTIONS"], parent=collection_name)
-        
+                OutlinerUtil.add_new_collection(context, "COLLECTION" , name = (collection_name + "_" + child), parent=collection_name)
         #UpdateLists and actives here
         GlobalDataHandler.add_to_global_list(context,global_listmapping,[collection_name])

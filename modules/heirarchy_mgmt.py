@@ -35,7 +35,7 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
     def execute(self, context):
         self.init_heirarchy(context)
         return {"FINISHED"}
-        
+
 
     def invoke(self, context, event):
         wm = context.window_manager
@@ -48,8 +48,14 @@ class UI_AddNew_Quick_Object_Popup(bpy.types.Operator):
     bl_idname = "wm.quick_add_obj"
 
     def execute(self, context):
-        proj_name = GlobalDataHandler.open_data(context)["PROJECT_NAME"]
-        OutlinerUtil.add_new_obj(context,proj_name)
+        proj_data = GlobalDataHandler.open_data(context)
+        proj_name = proj_data["PROJECT_NAME"]
+        active_collection_name = bpy.context.view_layer.active_layer_collection.name
+        if OutlinerUtil.collection_type_validator(context,"MATERIAL",active_collection_name):
+            OutlinerUtil.add_new_collection(context,"OBJECT",parent = active_collection_name,children = proj_data["OBJ_SUB_COLLECTIONS"])
+        else:
+            print("Can only add objects to material Groups")
+
 
         return {"FINISHED"}
 
