@@ -5,6 +5,11 @@ import json
 class GlobalDataHandler:
 
     @staticmethod
+    def typeid_to_globalmapping(type_id):
+        global_list_id = {"COLLECTION":"PROJECT_COLLECTIONS","OBJECT":"PROJECT_OBJECTS","MATERIAL":"PROJECT_MATERIALS"}
+        return global_list_id[type_id]
+
+    @staticmethod
     #Open data if not exist instantiate
     def open_data(context):
         print(json.loads(bpy.context.scene.ASSETCREATOR_GLOBALS))
@@ -16,6 +21,7 @@ class GlobalDataHandler:
         jsonData = GlobalDataHandler.open_data(context)
         if data_key in jsonData:
             print("DataKey of : " + data_key + " Already exists in data use UPDATE instead")
+            GlobalDataHandler.update_data(context,data_key,data_val)
         else:
             jsonData.update({data_key:data_val})
             GlobalDataHandler.save_data(context,jsonData)
@@ -29,8 +35,19 @@ class GlobalDataHandler:
             GlobalDataHandler.save_data(context,jsonData)
         else:
             print("DataKey of : " + data_key + " does not exist in data use APPEND instead")
+            GlobalDataHandler.append_data(context,data_key,data_val)
 
-    
+    @staticmethod
+    def add_to_global_list(context,list_id,elements):
+        object_list = GlobalDataHandler.open_data(context)[list_id]
+        for e in elements:
+            object_list.append(e)
+        GlobalDataHandler.update_data(context,list_id,object_list)
+
+    @staticmethod
+    def get_global_list_count(context,list_id):
+        return len(GlobalDataHandler.open_data(context)[list_id])
+
     @staticmethod
     #Increments a global data of a numerical Type
     def quick_inc(context,data_id):

@@ -10,25 +10,20 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
 
     # USER USER DEFINED INPUTS
     project_name = bpy.props.StringProperty(name="Project Name:")
-    obj_count = bpy.props.IntProperty(name="Object Count", default=1)
-
-    # METHODS
-    def get_definitions(self):
-        return (self.defaultlayout["high_poly_alias"],
-        self.defaultlayout["low_poly_alias"],
-        self.defaultlayout["extra_objects"],
-        self.defaultlayout["lods_alias"])
+    material_count = bpy.props.IntProperty(name="Material Count", default=1)
 
     def init_heirarchy(self, context):
         data = GlobalDataHandler.open_data(context)
         _instanced = data["PROJECT_INIT"]
 
         if _instanced == False:
+
             # Create a new collection with no parents or children
-            OutlinerUtil.add_collection(self.project_name)
+            OutlinerUtil.add_new_collection(context,"COLLECTION",name = self.project_name)
+            
             # With default of 1 create the framework for 'n' objects
-            for i in range(self.obj_count):
-                OutlinerUtil.add_new_obj(context,self.project_name)
+            for i in range(self.material_count):
+                OutlinerUtil.add_new_collection(context,"MATERIAL",parent = self.project_name)
 
             # Assign to the scene data so there can be no error of attempting to instance the project twice
             GlobalDataHandler.update_data(context,"PROJECT_INIT",True)
@@ -64,9 +59,13 @@ class UI_AddNewObject_Popup(bpy.types.Operator):
 
     object_name = bpy.props.StringProperty(name="Project Name:")
     primType = bpy.props.IntProperty(name="Object Count", default=1)
+    #new_mat_grouping = bpy.types.BoolProperty(name="New material group?",default=False)
+
 
     def execute(self, context):
+        proj_name = GlobalDataHandler.open_data(context)["PROJECT_NAME"]
 
+        OutlinerUtil.add_new_obj(context,proj_name, collection_name = self.object_name)
 
 
         return {"FINISHED"}

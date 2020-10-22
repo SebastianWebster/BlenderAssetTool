@@ -18,4 +18,7 @@ class MainPanel(bpy.types.Panel):
         row.operator('wm.quick_add_obj',text = "Quick Object")
         row.operator('wm.add_newobj',text = "Add Object")
 
+
+        row = layout.row()
+
     

@@ -6,46 +6,47 @@ from ..globaldata_util import GlobalDataHandler
 class OutlinerUtil:
 
     @staticmethod
-    # Given a collection name, potential parent and potential children
-    def add_collection(collection_name, **options):
-        bpy.ops.collection.create(name=collection_name)
-        # If there is a parent Assign else assign to scene collection
-        if 'parent' in options:
-            print("Linking collection " + collection_name +
-                  " to parent : " + options['parent'])
-            bpy.data.collections[options['parent']].children.link(
-                bpy.data.collections[collection_name])
-        else:
-            bpy.context.scene.collection.children.link(
-                bpy.data.collections[collection_name])
-
-    # Adds a new primitive to a defined collection
-    def add_new_primitive():
-        pass
+    # Returns an alias for an object type, will probably make this user defined
+    def get_type_alias(item_type):
+        item_alias_defs = {"COLLECTION":"","OBJECT":"_OBJ","MATERIAL":"_MAT"}
+        return item_alias_defs[item_type]
 
     @staticmethod
-    # Check for Kwarg that defines a primitve to populate the lowPoly and if object has a name
-    def add_new_obj(context, project_name, **kwargs):
-        # Check if a name was priveded for the object
-        project_data = GlobalDataHandler.open_data(context)
-        counter = project_data["UNIQUE_OBJ_COUNT"]
-        sub_collections = project_data["OBJ_SUB_COLLECTIONS"]
-
-        obj_name = ""
-        if "obj_name" in kwargs:
-            obj_name = kwargs["obj_name"]
+    def link_collection_parent(child_id,**options):
+        if 'parent' in options:
+            print("Linking collection " + child_id +
+                  " to parent : " + options['parent'])
+            bpy.data.collections[options['parent']].children.link(
+                bpy.data.collections[child_id])
         else:
-            objname = "OBJ" + str(counter)
+            bpy.context.scene.collection.children.link(
+                bpy.data.collections[child_id])
 
-        if "prim_type" in kwargs:
-            pass
 
-        counter += 1
-        # Link to parentScene
-        OutlinerUtil.add_collection(objname, parent=project_name)
-        # Add Child Collections
-        for definintion in sub_collections:
-            OutlinerUtil.add_collection(objname + "_" + definintion, parent=objname)
-            #Add objects here if any
+    @staticmethod
+    #Kwargs for <str>name,<str>parentid,<str>type,<itr>Children
+    def add_new_collection(context,type_id,**kwargs):
+        project_data = GlobalDataHandler.open_data(context)
+        collection_name = "new_collection"
+        postfix = OutlinerUtil.get_type_alias(type_id)
+        global_listmapping = GlobalDataHandler.typeid_to_globalmapping(type_id)
+        if "name" in kwargs:
+            collection_name = kwargs["name"]
+        # If no unique ID specified generate one via checking the global lists of materials,collections and objects
+        else:
+            collection_name = type_id + "_" +str(len(project_data[global_listmapping]))
 
-        GlobalDataHandler.update_data(context, "UNIQUE_OBJ_COUNT", counter)
+        # Create the Collection and assign parent if there is one
+        bpy.ops.collection.create(name=collection_name)
+        if "parent" in kwargs:
+            OutlinerUtil.link_collection_parent(collection_name,parent = kwargs["parent"])
+        else:
+            OutlinerUtil.link_collection_parent(collection_name)
+
+        #Iterate over children and assign this collection as parent
+        if "children" in kwargs:
+            for child in kwargs["children"]:
+                OutlinerUtil.add_new_collection(collection_name + "_" + project_data["OBJ_SUB_COLLECTIONS"], parent=collection_name)
+        
+        #UpdateLists and actives here
+        GlobalDataHandler.add_to_global_list(context,global_listmapping,[collection_name])
