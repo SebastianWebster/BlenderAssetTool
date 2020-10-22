@@ -35,6 +35,7 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
     def execute(self, context):
         self.init_heirarchy(context)
         return {"FINISHED"}
+        
 
     def invoke(self, context, event):
         wm = context.window_manager

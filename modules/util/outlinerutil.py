@@ -26,6 +26,9 @@ class OutlinerUtil:
     @staticmethod
     #Kwargs for <str>name,<str>parentid,<str>type,<itr>Children
     def add_new_collection(context,type_id,**kwargs):
+        #Ensures there are no selected objects, which would cook up the system
+        bpy.ops.object.select_all(action='DESELECT')
+        
         project_data = GlobalDataHandler.open_data(context)
         collection_name = "new_collection"
         postfix = OutlinerUtil.get_type_alias(type_id)
