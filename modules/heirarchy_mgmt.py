@@ -11,6 +11,7 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
     # USER USER DEFINED INPUTS
     project_name = bpy.props.StringProperty(name="Project Name:")
     material_count = bpy.props.IntProperty(name="Material Count", default=1)
+    
 
     def init_heirarchy(self, context):
         data = GlobalDataHandler.open_data(context)
