@@ -15,6 +15,9 @@ class MainPanel(bpy.types.Panel):
         row = layout.row()
         row.operator('wm.heirarchy_manager',text = "Start New Project")
         row = layout.row()
+        row.operator('wm.quick_add_new_mat',text = "Quick Material")
+        row.operator('wm.add_newmat',text = "Add Material")
+        row = layout.row()
         row.operator('wm.quick_add_obj',text = "Quick Object")
         row.operator('wm.add_newobj',text = "Add Object")
 
