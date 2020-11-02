@@ -18,6 +18,7 @@ class AutoLoader:
                 if inspect.isclass(obj) and hasattr(obj,"bl_idname"):
                     print("Class :" + name + " ClassType : " + str(type(obj)))
                     bpy.utils.register_class(obj)
+                    
     @staticmethod
     def UnRegister():
         print("de-registering classes")

@@ -1,5 +1,11 @@
 import bpy
 import json
+import os
+from pathlib import Path
+from bpy.props import StringProperty, BoolProperty 
+from bpy_extras.io_utils import ImportHelper
+
+#local Modules
 from .util.outlinerutil import OutlinerUtil
 from .globaldata_util import GlobalDataHandler
 
@@ -9,7 +15,11 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
     bl_idname = "wm.heirarchy_manager"
     # USER USER DEFINED INPUTS
     project_name = bpy.props.StringProperty(name="Project Name:")
+
+    file_path = bpy.props.StringProperty(name="Project Filepath:")
+
     material_count = bpy.props.IntProperty(name="Material Count", default=1)
+
     def init_heirarchy(self, context):
         data = GlobalDataHandler.open_data(context)
         _instanced = data["PROJECT_INIT"]
@@ -22,16 +32,25 @@ class UI_Heirarchy_MGMT_Popup(bpy.types.Operator):
             # Assign to the scene data so there can be no error of attempting to instance the project twice
             GlobalDataHandler.update_data(context,"PROJECT_INIT",True)
             GlobalDataHandler.append_data(context,"PROJECT_NAME",self.project_name)
+            GlobalDataHandler.append_data(context,"PROJECT_FILEPATH",self.file_path)
         else:
             print("Already Instanced skipping")
 
     def execute(self, context):
+        if self.project_name == "":
+            self.report({"WARNING","Project name cannot be blank"})
+            return {"CANCELLED"}
+        if Path(self.file_path).exists() == False:
+            self.report({"WARNING","File Path:" + self.file_path + " is not a valid directory"})
+            return {"CANCELLED"}
+        if len(os.listdir(Path(self.file_path))) > 0:
+            self.report({"WARNING","It is reccomended to initilize a new project in a completely empty directory."})
+
         self.init_heirarchy(context)
         return {"FINISHED"}
 
     def invoke(self, context, event):
         wm = context.window_manager
-
         return wm.invoke_props_dialog(self)
 
 
@@ -60,12 +79,10 @@ class UI_AddNewObject_Popup(bpy.types.Operator):
             OutlinerUtil.add_new_collection(context,"OBJECT",parent = active_collection_name,name = self.object_name,children = proj_data["OBJ_SUB_COLLECTIONS"])
         else:
             print("Can only add objects to material Groups")
-
         return {"FINISHED"}
 
     def invoke(self, context, event):
         wm = context.window_manager
-
         return wm.invoke_props_dialog(self)
 
 
@@ -75,11 +92,8 @@ class UI_AddNew_Quick_Material_Popup(bpy.types.Operator):
 
     def execute(self, context):
         proj_data = GlobalDataHandler.open_data(context)
-        
         OutlinerUtil.add_new_collection(context,"MATERIAL",parent = proj_data["PROJECT_NAME"])
-
         return {"FINISHED"}
-
 
 
 class UI_AddNewMaterial_Popup(bpy.types.Operator):
@@ -87,15 +101,10 @@ class UI_AddNewMaterial_Popup(bpy.types.Operator):
     bl_idname = "wm.add_newmat"
     material_name = bpy.props.StringProperty(name="Material Name:")
     def execute(self, context):
-
         proj_data = GlobalDataHandler.open_data(context)
         OutlinerUtil.add_new_collection(context,"MATERIAL",parent = proj_data["PROJECT_NAME"],name = self.material_name)
-
         return {"FINISHED"}
 
     def invoke(self, context, event):
         wm = context.window_manager
-
         return wm.invoke_props_dialog(self)
-
-

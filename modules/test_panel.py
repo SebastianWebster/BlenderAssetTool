@@ -2,9 +2,9 @@ import bpy
 
 
 class MainPanel(bpy.types.Panel):
-    bl_idname = "main_PT_panel"
-    bl_label = "AssetCreator"
-    bl_category = "AssetCreator"
+    bl_idname = "MAIN_PT_PANEL"
+    bl_label = "AssetCreatorPanel"
+    bl_category = "AssetCreatorPanel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     #Defines if a project has been started, stops user from running startnewproject twice and deleting everything
@@ -20,7 +20,6 @@ class MainPanel(bpy.types.Panel):
         row = layout.row()
         row.operator('wm.quick_add_obj',text = "Quick Object")
         row.operator('wm.add_newobj',text = "Add Object")
-
 
         row = layout.row()
 

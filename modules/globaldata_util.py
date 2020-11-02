@@ -21,7 +21,7 @@ class GlobalDataHandler:
         return json.loads(bpy.context.scene.ASSETCREATOR_GLOBALS)
 
     @staticmethod
-    #Used for adding new dataentries
+    #Used for adding new data entries
     def append_data(context,data_key,data_val):
         jsonData = GlobalDataHandler.open_data(context)
         if data_key in jsonData:
